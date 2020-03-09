@@ -1,0 +1,687 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="chrome=1" />
+    <meta
+      name="viewport"
+      content="user-scalable=no, width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1"
+    />
+    <meta name="description" content="Vanilla Javascript form building module" />
+    <meta name="theme-color" content="#232323" />
+    <link rel="stylesheet" href="assets/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="assets/css/formbuilder.min.css" />
+	   
+    <title>Formeo | Drag &amp; Drop Form Creation</title>
+	 
+<style>
+@charset "utf-8";
+.formeo .f-addon, .formeo.formeo-editor .field-edit [contenteditable], .formeo input, .formeo select, .formeo textarea{padding:0px !important;}
+/* CSS Document */
+/* input */
+input.form-control.input-sm.input-lg.center-block.input-border.input-border-bottom.input-bg-color.input-border-dashed.input-focus-style1.input-margin-1
+.input-padding-1.input-padding-2.input-padding-3.input-text-center.input-text-right.input-no-border{}
+.formeo .form-group.form-inline.sr-only{}
+.formeo form.form-horizontal.form-inline.input-group.form-group{}
+.formeo label.control-label{}
+/* Checkbox */
+.formeo .checkbox.disabled.checkbox-inline.hidden{}
+/* radio */
+.formeo .radio.disabled.radio-inline{}
+/* select */
+.formeo select.form-control{}
+/* textarea */
+.formeo textarea.form-control{}
+.formeo input.input-border{border:1px solid #999;}
+input.input-bg-color{background-color:#EDEDED;}
+.formeo input.input-border-dashed{border:1px dashed #999;}
+.formeo input.input-border-bottom{
+	-webkit-box-sizing: content-box;
+    box-sizing: content-box;
+    background-color: transparent;
+    border: none;
+    border-bottom: 1px solid #ced4da;
+    border-radius: 0;
+    outline: none;
+    -webkit-box-shadow: none;
+    box-shadow: none;
+    -webkit-transition: border-color 0.15s ease-in-out,-webkit-box-shadow 0.15s ease-in-out;
+    transition: border-color 0.15s ease-in-out,-webkit-box-shadow 0.15s ease-in-out;
+    transition: border-color 0.15s ease-in-out,box-shadow 0.15s ease-in-out;
+    transition: border-color 0.15s ease-in-out,box-shadow 0.15s ease-in-out,-webkit-box-shadow 
+	}
+
+.formeo input.input-focus-style1:focus {
+    background-color: #FFFFFF;
+    border-color:#B0B0B0;
+    outline: 0;
+    box-shadow: 0 0 0 0.2rem rgba(0,123,230,.25);
+	box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px rgba(221,237,182,.8);
+}
+
+.formeo input.input-padding-1{
+	padding:10px;
+}
+.formeo input.input-margin-1{
+	margin-left:10px;
+}
+.formeo input.input-padding-2{
+	padding:20px;
+}
+.formeo input.input-padding-3{
+	padding:30px;
+}
+.formeo input.input-text-center{
+	text-align:center;
+}
+.formeo input.input-text-right{
+	text-align:right;
+}
+.formeo input.input-no-border{
+	border:0;
+}
+.formeo.formeo-editor .formeo-stage{
+	min-height: 620px;
+}
+.formeo.formeo-editor .row-edit .input-group-wrap.split-columns .f-field-group{
+	width:20%;
+}
+.formeo.formeo-editor .row-edit .split-columns .f-field-group{
+	display:table-cell;
+	vertical-align:top;
+	padding:5px 0px;
+	border: 1px solid #ccc;
+    border-radius: 4px;
+}
+.formeo.formeo-editor .row-edit .split-columns .f-field-group label{
+	vertical-align:top;
+}
+.formeo.formeo-editor .row-edit .split-columns .input-group-addon:first-child{
+	border-top-right-radius: 1;
+	border-right:1px;
+	border: 1px solid #ccc;
+	border-radius: 4px;
+}
+.formeo.formeo-editor .row-edit .split-columns .f-field-group input[type="checkbox"]{
+	float: right !important;
+    margin-left: 10px !important;
+    margin-top: 10px !important;
+}
+.formeo.formeo-editor .formeo-stage.loader ul.children:first-child {
+  border: 12px solid #f3f3f3;
+  border-radius: 50%;
+  border-top: 12px solid #3498db;
+  width: 100px;
+  height: 100px;
+  -webkit-animation: spin 2s linear infinite;
+  animation: spin 2s linear infinite;
+  margin:auto;
+  left:0;
+  right:0;
+  top:0;
+  bottom:0;
+  position:absolute;
+}
+.formeo.formeo-editor .formeo-stage.loader ul.children:first-child li {
+  display:none;
+}
+
+@-webkit-keyframes spin {
+  0% { -webkit-transform: rotate(0deg); }
+  100% { -webkit-transform: rotate(360deg); }
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.formeo fieldset.rowtable, .formeo fieldset.divtable
+{
+	margin: 0;
+	min-width: 0;
+	padding: 10px;       
+	position: relative;
+	border-radius:4px;
+	padding-left:10px!important;
+	display: block;
+    margin-inline-start: 2px;
+    margin-inline-end: 2px;
+    padding-block-start: 0;
+    padding-inline-start: 0;
+    padding-inline-end: 0;
+    padding-block-end: 0;
+    min-inline-size: min-content;
+}	
+.formeo-column .label{
+	font-weight: normal !important;
+}
+.formeo legend[class=""],.formeo legend[class="default"],.formeo legend:not([class])
+{
+	font-size:14px;
+	font-weight:bold;
+	margin-bottom: 0px; 
+	width: 100%; 
+	border: 1px solid #ddd;
+	border-radius: 4px; 
+	padding: 5px 5px 5px 10px; 
+	background-color: #ffffff;
+	padding-inline-start: 0px !important;
+    padding-inline-end: 0px !important;
+}
+.formeo	legend:not([class=""])
+{
+	font-size:14px;
+	font-weight:bold;
+	margin-bottom: 0px; 
+	width: 100%; 
+	border: 1px solid #ddd;
+	border-radius: 4px; 
+	padding: 5px 5px 5px 10px; 
+	padding-inline-start: 0px !important;
+    padding-inline-end: 0px !important;
+}
+.formeo-column label.diplay-inline{
+	display:inline-flex !important;
+	width:auto;
+	max-width:50%;
+}
+.formeo-column div.diplay-inline,.formeo-column input.diplay-inline,.formeo-column select.diplay-inline{
+	display: inline-flex;
+    margin: 0px 10px;
+}
+.formeo-column div.diplay-inline .f-checkbox{
+    margin: 0px 10px;
+}
+
+.formeo input[type=date]{
+    width: 100%;
+	max-width: unset;
+}
+.formeo-column label.diplay-block{
+	display:block !important;
+	width:100%;
+	text-align:center;
+	font-weight:bold;
+}
+.formeo.formeo-editor .formeo-field{
+	min-height:30px !important;
+}
+.formeo-column .field-preview div.diplay-block.f-field-group{
+	height:30px;
+}
+.formeo-column div.diplay-block.f-field-group{
+	height:20px;
+}
+.formeo-column div.diplay-block,.formeo-column input.diplay-block,.formeo-column select.diplay-block{
+	display:block !important;
+	width:100%;
+}
+.rowtable > legend.table-bordered:empty,.rowtable > legend.table-bordered:blank{
+	display:none;
+}
+
+.rowtable > legend.table-bordered + div.formeo-row .formeo-column {
+    border: 1px solid black;
+}
+.rowtable > legend.f-btn-group + div.formeo-row .formeo-column {
+    width: auto !important;
+}
+.formeo-column input.diplay-inline{
+	margin: 0px 5px;
+}
+.formeo-column input.diplay-block{
+	width:100%
+}
+.formeo-column .label:empty{
+	display:block;
+	color: #000;
+    text-align: left;
+}
+.formeo-column .f-field-group {
+    width: 100%;
+    float: left;
+	margin-bottom:0px !important;
+}
+.formeo fieldset.rowtable, .formeo fieldset.divtable{
+	padding-left:0px !important;
+}
+.formeo-column{
+	margin: 0;
+	padding: 0 !important;
+	list-style-type: none;
+	box-sizing: border-box;
+}
+.formeo input[type=image]{
+	width:250px !important;
+	height:75px !important;
+}
+.formeo input.custom-label{
+    color: black !important;
+    border-radius: 0px !important;
+}
+.formeo input.input-row{
+	position: inherit;
+    width: 50%;
+    float: right;
+    display: inline-block;
+}
+.formeo .f-field-group>label {
+	display: inline-block;
+	margin-top:8px;
+	width:auto;
+    line-height: 14px;
+}
+.formeo .input-row{
+	display: inline-flex;
+}
+.formeo  .prev-label.input-row{
+	position:absolute;
+}
+.formeo .input-row .f-checkbox{
+	display: inline-flex;
+	padding: 0px 5px;
+}
+.formeo input[type="color"] {
+  width:150px !important;
+}
+/* Report Fields styles */
+
+.formeo.formeo-render .formeo-row-wrap.applysinglecolumnline .formeo-column .f-field-group {
+    width: calc(100%/3);
+}
+.formeo.formeo-render .formeo-row-wrap.applysinglecolumnline .formeo-column .f-field-group input{
+    width: 55%;
+}
+.formeo.formeo-render .formeo-column.column-padding-left10 f-field-group label{
+	padding-left:10px;
+}
+.formeo.formeo-render .formeo-row-wrap.rowtable.table-border.sub{
+	border-top: 0 !important;
+}
+.formeo.formeo-render .formeo-row-wrap.rowtable.table-border.sub:last-child{
+	margin-bottom: 0 !important;
+}
+.formeo.formeo-render .formeo-row-wrap.rowtable.table-border.main + .rowtable.table-border.sub:not(:last-child){
+	margin-bottom: 0 !important;
+}
+
+.formeo.formeo-render .formeo-row-wrap.rowtable.table-border.group-border.main .formeo-column div:not(:last-child), .rowtable.table-border.group-border.sub .formeo-column div:not(:last-child){
+	margin-bottom: 0 !important;
+    border-bottom: 1px solid #737373 !important;
+    border-top: 0;
+}
+
+.formeo.formeo-render .formeo-row-wrap.rowtable.table-border.sub + .rowtable.table-border.main{
+	border-bottom: 1px solid #737373;
+}
+
+.formeo.formeo-render .formeo-row-wrap.rowtable.table-border.sub + .rowtable.table-border.sub:not(:last-child){
+	margin-bottom: 0 !important;
+    border-bottom: 1px solid #737373 !important;
+    border-top: 0;
+}
+.formeo.formeo-render .formeo-row-wrap.table-border.main:first-child .formeo-column{border-right:0 !important;}
+
+.formeo.formeo-render .formeo-row-wrap.rowtable.table-border.othermain{
+}
+.formeo.formeo-render .formeo-row-wrap.divtable.table-border.sub + .rowtable.table-border.main,.formeo.formeo-render .formeo-row-wrap.rowtable.table-border.sub + .rowtable.table-border.main{
+    margin-top: 1em !important;
+}
+.formeo.formeo-render .formeo-row-wrap.rowtable.table-border.main + .rowtable.table-border.main{
+    margin-bottom: 1em !important;
+	margin-top: 1em !important;
+	border-bottom: 1px solid #737373 !important;
+}
+.formeo.formeo-render .formeo-row-wrap.rowtable.table-border.main{
+    margin-bottom: 0 !important;
+    border-bottom: 1px solid #737373;
+}
+.formeo.formeo-render .formeo-row-wrap.rowtable.table-border.sub + .rowtable.table-border.sub:last-child, .formeo.formeo-render .formeo-row-wrap.rowtable.table-border.main:last-child{
+	border-bottom: 1px solid #737373 !important;
+}
+.formeo.formeo-render .formeo-row.margin-top0{margin-top: 0!important;}
+.formeo.formeo-render .formeo-row-wrap.rowtable.table-border legend.legend-border-bottom{border-bottom: 1px solid #737373 !important;}
+.formeo.formeo-render .formeo-row-wrap.rowtable.table-border .label-success{background-color: #b1cb48; -webkit-print-color-adjust: exact;}
+.formeo.formeo-render legend:not([class]){
+    display: none;
+}
+.formeo.formeo-render legend{
+	text-transform: capitalize;
+	position: absolute;
+}
+.formeo.formeo-render fieldset.rowtable legend + div.formeo-row{margin-top: 30px;}
+.formeo.formeo-render .divtable .formeo-row{margin-top: 5px;margin-bottom: 5px;}
+.formeo.formeo-render legend.noborder{border:0;}
+.formeo div .formeo-row-wrap.divtable legend.noborder, .formeo fieldset .formeo-row-wrap.rowtable legend.noborder{border:0;}
+.formeo.formeo-render legend.noborder-radius{border-radius: 0;}
+.formeo div.divtable.table-border, .formeo fieldset.rowtable.table-border{border:1px solid #737373;}
+.formeo div.divtable.no-border-radious, .formeo fieldset.rowtable.no-border-radious{border-radius: 0;}
+.formeo.formeo-render .formeo-column.column-padding-10{padding: 10px !important;}
+.formeo.formeo-render .formeo-column.column-border-right{border-right:1px solid #737373 !important;}
+.formeo.formeo-render .formeo-row-wrap.rowtable.main .formeo-column.column-padding-left10,.formeo.formeo-render .formeo-row-wrap.rowtable.sub .formeo-column.column-padding-left10{padding: 10px !important;}
+.formeo.formeo-render .formeo-row-wrap.rowtable.othermain .formeo-column.column-padding-left10 div{padding-left: 10px !important;} 
+.formeo.formeo-render .formeo-row-wrap.rowtable .formeo-column.column-padding-left10 div{padding-left: 10px !important;} 
+.formeo.formeo-render .formeo-column.column-padding-left10.no-padding{padding: 0px !important;} 
+.formeo.formeo-render .formeo-row-wrap.rowtable.table-border .formeo-column.column-padding-left10:not(:last-child){border-right:1px solid #737373 !important;}
+.formeo.formeo-render .formeo-row{padding: 0;}
+.formeo.formeo-render .formeo-row-wrap.rowtable.main.has-column-heading .formeo-column.column-padding-left10, .formeo.formeo-render .formeo-row-wrap.rowtable.sub.has-column-heading .formeo-column.column-padding-left10 {padding:0px !important;}
+.formeo.formeo-render .formeo-row-wrap.has-column-heading .formeo-column div:first-child {
+    width: 100%;
+    text-align: center;
+}
+.formeo.formeo-render .formeo-column .column-heading{
+	border-bottom:1px solid #737373 !important;
+}
+.formeo.formeo-render .formeo-column .column-heading-padding-5{padding: 3px 10px;}
+.formeo.formeo-render .formeo-column .column-inner-padding-10{padding:0 10px;}
+@media print {
+.formeo.formeo-render .formeo-row-wrap.rowtable .label-success{background-color: #b1cb48; -webkit-print-color-adjust: exact;}
+}
+
+</style>
+  </head>
+  <body>
+    <div class="site-wrap">
+      <section id="main_content" class="inner">
+		<div>
+			<label for="control-filter">Control Filter:</label>
+            <input type="text" id="control-filter" placeholder="ex. text" class="form-control" />
+        </div>
+        <form class="build-form1 clearfix"></form>
+		<form id="renderdata" class="render-form1 clearfix" ></form>
+        <!--<div class="render-form1"></div>--->
+		<button type="button" id="getData" onclick="getData();">Get Data</button>
+      </section>
+      <div class="container render-btn-wrap" id="editor-action-buttons">
+      </div>
+    </div>
+    <script src="assets/js/formbuilder.min.js"></script>
+	<script>
+	function getRenderForm(){
+		var elements = document.getElementById("renderdata").elements;
+		console.log(elements);
+		var objdata = [];
+
+
+		for(var i = 0 ; i < elements.length ; i++){
+			var item = elements.item(i);
+			console.log(item);
+			console.log(item.type);
+			if(item.type == 'checkbox' || item.type == 'radio')
+				if(item.checked == true)
+					objdata.push({type:item.type,name:item.name,id:[item.id],value:item.value});
+			else
+				objdata.push({type:item.type,name:item.name,id:[item.id],value:item.value});
+		}
+		return JSON.stringify(objdata);
+	}
+	
+	function checkRequired(element,inputName) {
+		el=document.querySelectorAll('input[name="'+inputName+'"]');
+		
+		var atLeastOneChecked=false;
+		for (i=0; i<el.length; i++) {
+			if (el[i].checked === true) {
+				atLeastOneChecked=true;
+			}
+		}
+
+		if (atLeastOneChecked === true) {
+			for (i=0; i<el.length; i++) {
+				el[i].required = false;
+			}
+		} else {
+			for (i=0; i<el.length; i++) {
+				el[i].required = true;
+			}
+		}
+	}
+	
+	function getRenderFormWithData(){
+		var elements = document.getElementById("renderdata").elements;
+		for(var i = 0 ; i < elements.length ; i++){
+			var item = elements.item(i);
+			if(item.tagName != 'FIELDSET'){
+				if(item.tagName=="INPUT" && (item.type == 'checkbox' || item.type == 'radio')){
+					if(item.checked == true)
+						document.getElementById(item.id).setAttribute("checked","checked");
+				}else if(item.tagName == 'SELECT'){
+					for(var i1 = 0; i1 < item.options.length; i1++)
+					   {
+						  if(item.options[i].selected)
+						  {
+							selElement = item.getElementsByTagName( 'option' )[ i1 ];
+							selElement.setAttribute("selected","selected");
+						  }else{
+							selElement = item.getElementsByTagName( 'option' )[ i1 ];
+							selElement.removeAttribute("selected");
+						  }
+					   }
+				}else if(item.tagName == 'TEXTAREA'){
+					document.getElementById(item.id).append(item.value);
+				}else
+					document.getElementById(item.id).setAttribute("value", item.value);
+			}else{
+				document.getElementById(item.id).setAttribute("disabled","disabled");
+			}
+		}
+		return document.getElementById("renderdata").innerHTML;
+	}
+	function getData(){
+		var elements = document.getElementById("renderdata").elements;
+		var obj ={};
+		for(var i = 0 ; i < elements.length ; i++){
+			var item = elements.item(i);
+			obj[item.name] = item.value;
+		}
+
+		formData  = JSON.stringify(obj);
+		console.log(formData);
+	}
+	var formData ={};
+	var Twidth = Array.from(Array(11).keys()).slice(0).map(function(t) {
+			return {
+					label: (t==0) ? "" : t*10+"%",
+					value: (t==0) ? "" : t*10+"%",
+				};
+		});
+	function createBuilder1(){
+		l = {
+                sortable: !1,
+                groupOrder: ["common", "html"],
+                disable: {},
+                elements: [{
+                    tag: "input",
+                    config: {
+                        label: "Email",
+                        disabledAttrs: ["type"],
+                        lockedAttrs: ["required", "className"],
+                    },
+                    meta: {
+                        group: "common",
+                        id: "email",
+                        icon: "@"
+                    },
+                    attrs: {
+                        className: ["label","common","button","checkbox","container","select","hidden","nav","navbar","panel","progress","tablerow","table","group"],
+                        type: "email",
+                        required: !0,
+						removeLabel:!1,
+						textAlign:[{label:"",value:""},{label:"left",value:"left"},{label:"right",value:"right"}],
+						textWidth:Twidth,
+                    }
+                },{
+						tag: "input",
+						config: {
+							label: "Logo",
+							disabledAttrs: ["type"],
+							inputWrap: "form-check",
+							hideLabel: !0
+						},
+						attrs: {
+							className: ["label","common","button","checkbox","container","select","hidden","nav","navbar","panel","progress","tablerow","table","group"],
+							type: "image",
+							src: 'https://formbuilder.online/assets/img/fb-logo.svg',
+							textAlign:[{label:"",value:""},{label:"left",value:"left"},{label:"right",value:"right"}],
+						},					
+						meta: {
+							group: "html",
+							id: "image",
+							icon: "img"
+						}
+					},
+					{
+						tag: "div",
+						config: {
+							label: "Label",
+							editableContent: !0,
+							hideLabel: !0
+						},
+						attrs: {
+							className: ["label","common","button","checkbox","container","select","hidden","nav","navbar","panel","progress","tablerow","table","group"],
+							applyFullwidth:true,
+							backgroundColor:"#fffff",
+							fontColor:"#000000",
+							style:"",
+							textAlign:[{label:"",value:""},{label:"left",value:"left"},{label:"right",value:"right"}],
+							textWidth:Twidth,
+						},					
+						meta: {
+							group: "html",
+							id: "label",
+							icon: "tag"
+						},
+						content: "Label"
+					},
+					{
+						tag: "input",
+						attrs: {
+							type: "time",
+							required: !1,
+							className: ["label","common","button","checkbox","container","select","hidden","nav","navbar","panel","progress","tablerow","table","group"],
+							removeLabel:!1,
+							textAlign:[{label:"",value:""},{label:"left",value:"left"},{label:"right",value:"right"}],
+							textWidth:Twidth,
+						},
+						config: {
+							label: "Time"
+						},
+						meta: {
+							group: "common",
+							icon: "calendar",
+							id: "time-input"
+						}
+					},
+					{
+					tag: "span",
+					attrs: {
+						className:["label","common","button","checkbox","container","select","hidden","nav","navbar","panel","progress","tablerow","table","group"]
+					},
+					config: {
+						label: "span",
+						editableContent: !0,
+						hideLabel: !0
+					},
+					meta: {
+						group: "html",
+						icon: "tag",
+						id: "span"
+					},
+					content: "Span"
+				}
+				],
+                elementOrder: {
+                    common: ["button", "checkbox", "date-input", "hidden", "upload", "number", "radio", "select", "text-input", "textarea"]
+                }
+            };
+            f = {
+				rows:{all:{events:{onRender:function(t){
+					console.log('You just added a new row with the id "'+t.id+'"')
+				}}}},
+                fields: {
+                    "a33bcc32-c54c-46ed-9609-7cdb5b3dc511": {
+                        events: {
+                            onRender: function(t) {
+                                console.log(t), setTimeout(function() {
+                                    t.querySelector(".next-group").click()
+                                }, 333)
+                            }
+                        },
+                        panels: {
+                            attrs: {
+                                hideDisabled: !0
+                            },
+                            disabled: []
+                        }
+                    }
+                }
+            };
+            p = {
+                editorContainer: '.build-form1',
+                actions: {},
+                controls: l,
+                config: f,
+				debug: !1,
+                events: {
+                    onSave: console.log,
+					onRender: function(t) {
+					},
+                },
+                sessionStorage: !0,
+                editPanelOrder: ["attrs", "options"]
+            };
+            h = {
+                renderContainer: '.render-form1'
+            };
+            
+            g = document.getElementById("editor-action-buttons");
+            w = new FormeoEditor(p,formData);
+            x = new FormeoRenderer(h);
+			o = function(t, e) {
+				return {
+					renderForm: function() {
+						return e.render(t.formData)
+					},
+					logJSON: function() {
+						return console.log(t.json)
+					},
+					viewData: function() {
+						Object.entries(t.formData).forEach(function(t) {
+							var e = t[0],
+								n = t[1];
+							return console.log(e, n)
+						})
+					},
+					getRenderData: function() {
+						var formValue = getRenderForm();
+						console.log(formValue);
+					},
+					getRenderFormWithData:function() {
+						console.log(getRenderFormWithData())
+						console.log('done')
+					},
+					resetEditor: function() {
+						window.sessionStorage.removeItem("formeo-formData"), window.location.reload()
+					}
+            };
+			}(w, x), Object.entries(o).map(function(t) {
+            var e = t[0],
+                n = t[1],
+                r = {
+                    id: e,
+                    type: "button"
+                },
+                o = Object.assign(document.createElement("button"), r),
+                i = document.createTextNode(e);
+            return o.appendChild(i), o.addEventListener("click", n, !1), g.appendChild(o), o
+        }), i = w, a = document.getElementById("control-filter"), c = window.sessionStorage.getItem("formeo-locale"), a.addEventListener("input", function(t) {
+            var e = t.target.value;
+            return i.controls.actions.filter(e)
+        })
+	}
+	createBuilder1();
+	function checkrequired(){}
+	</script>
+  </body>
+</html>
